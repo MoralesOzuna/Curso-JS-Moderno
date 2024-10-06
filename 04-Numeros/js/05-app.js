@@ -10,6 +10,9 @@ puntaje++; //retorna 5
 puntaje --; //retorna 5
 --puntaje; //retorna 4 
 
-puntaje += 3;
+puntaje += 3; //Aumenta de 3 en 3
+
+
+puntaje -= 3; //Decrese de 3 en 3
 
 console.log(puntaje);
