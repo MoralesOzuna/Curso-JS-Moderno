@@ -21,8 +21,6 @@ const nuevoArreglo = carrito.forEach( producto => producto.precio);
 //map crea un nuevo array con los resultados de aplicar la función dada a cada elemento del array original.
 //Resultado nuevoArreglo2 contendrá un nuevo array con los nombres de los productos.
 
-
-
 const nuevoArreglo2 = carrito.map(producto => producto.nombre);
 
 console.log(nuevoArreglo);

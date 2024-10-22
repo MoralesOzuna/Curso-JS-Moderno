@@ -12,5 +12,6 @@ for (let propiedad in automovil){ //for of itera sobre arreglo for in itera sobr
 
 
 for (let [llave, valor] of Object.entries(automovil)){
-
+    console.log(valor); //retorna valores
+    console.log(llave); //retorna objetos
 }
