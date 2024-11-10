@@ -10,9 +10,14 @@ parrafo2.textContent = 'Concierto de Rock';
 parrafo2.classList.add('titulo');
 
 // 3er parrafo...
+
+/* Misma funcion para eviar al bubbling, pero este tipo de solucion aplica mas cuando se genera el contenido con javascript */
 const parrafo3 = document.createElement('p');
 parrafo3.textContent = '$800 por persona';
 parrafo3.classList.add('precio');
+parrafo3.onclick = function(){
+    nuevaFuncion(1); //si necesito pasar un parameto, seria de esta forma
+};
 
 // crear el div...
 const info = document.createElement('div');
@@ -38,3 +43,8 @@ contenedorCard.appendChild(info);
 // Insertarlo en el HTML...
 const contenedor = document.querySelector('.hacer .contenedor-cards');
 contenedor.appendChild(contenedorCard); // al inicio info
+
+
+function nuevaFuncion(id){
+    console.log(`desde nueva funcion${id}` )
+}

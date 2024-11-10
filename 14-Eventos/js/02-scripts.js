@@ -9,7 +9,7 @@ nav.addEventListener('click', () =>{
 
 
 nav.addEventListener('mouseenter', () =>{
-    console.log('Este evento sucede cuando se entra en el espacio de la navegacion con el mouse');
+    console.log('Este evento sucede cuando te colocas sobre la navegacion con el mouse');
     nav.style.backgroundColor = 'white'
     
 });
