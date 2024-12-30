@@ -1,158 +1,166 @@
 //Variables
-const carrito = document.querySelector('#carrito'); /* div que contiene el contenido del carrito  */
-const contenedorCarrito = document.querySelector('#lista-carrito tbody'); /* /t body donde se insertaran los productos */
-const vaciarCarritoBtn = document.querySelector('#vaciar-carrito'); 
-const listaCursos = document.querySelector('#lista-cursos'); /* Listado de cursos en la pagina */
+
+const carrito = document.querySelector('#carrito'); //tiene basicamente todo el contenido de carrito
+const contenedorCarrito = document.querySelector('#lista-carrito tbody'); //El body del carrito
+const vaciarCarritoBtn = document.querySelector('#vaciar-carrito'); //Boton de vaciar carrito
+const listaCursos = document.querySelector('#lista-cursos'); //Listado de todos los cursos en la pagina principal
 let articulosCarrito = [];
 
 
-cargarEventListeners();
-function cargarEventListeners(){
 
-    //Cuando agregas un curso presionando "Agregar al carrito'"
+cargarEventListeners();
+
+function cargarEventListeners(){ //Se crea esta funcion ya que va a ver diferentes listeners
+    //Cuando agregas un curso presionando el boton "agregar al Carrito"
     listaCursos.addEventListener('click', agregarCurso);
 
     //Elimina cursos del carrito
 
-    carrito.addEventListener('click', eliminarCurso);
-
+    carrito.addEventListener( 'click', eliminarCurso);
 
 
     //Vaciar el carrito
 
     vaciarCarritoBtn.addEventListener('click', () =>{
-        console.log('Vaciando carrito...');
-
-        articulosCarrito = []; //Reseteamos el arreglo
-        limpiarHTML(); //Eliminamos todo el html
+        articulosCarrito = [];
+        limpiarHTML(); //Eliminamos todo el HTML
     })
 }
 
 
-//Funciones
+// Funciones
 function agregarCurso(e){
     e.preventDefault();
-    if(e.target.classList.contains('agregar-carrito')){ /* agregar-carrito es la clase del boton */
-        const cursoSeleccionado = e.target.parentElement.parentElement; //Traversting the doom //accedemos al div del producto, para ir accediendo posteriormente a toda la informacion
-        leerDatosCurso(cursoSeleccionado);
+
+
+    if(e.target.classList.contains('agregar-carrito') ){ 
+        const cursoSeleccionado = e.target.parentElement.parentElement;
+
+        leerDatosCurso(cursoSeleccionado)
     }
-
-
 }
 
 //Elimina un curso del carrito
+
 function eliminarCurso(e){
-    if(e.target.classList.contains('borrar-curso')) {
+    if(e.target.classList.contains('borrar-curso')){
         const cursoId = e.target.getAttribute('data-id');
 
-        //REVISAR SI UN ELEMENTO TIENE MAS DE UNA CANTIDAD EN EL CARRITO
+        //Elimina del areglo de articulos Carrito por el data-id
+        articulosCarrito = articulosCarrito.filter(curso => {
 
-        const cantidad = articulosCarrito.some( curso => curso.cantidad > 1);
+            if(curso.id === cursoId){
+                curso.cantidad --;
 
-        if(cantidad){
-            articulosCarrito.map(curso =>{
-                if(curso.cantidad > 1){
-                    curso.cantidad--;
-                    return curso;
-                } 
-            })
-        
-        } else{
+                if(curso.cantidad < 1){
+                    delete curso;
+                }
+                else{
+                    return curso
+                }
+            }
+            else{
+                return curso
+            }
+        });
 
-            articulosCarrito = articulosCarrito.filter( curso => curso.id !== cursoId);
+
+    
+        carritoHTML(); //iterar sobre el crrito y mostrar su HTML
             
-        }
 
-        carritoHTML(); // Iterar sobre el carrito y mostrar su HTML
+    
+
     }
 }
 
+     
+
+
+
+
 //Lee el contenido del HTML al que le dimos click y extrae la informacion del curso
 function leerDatosCurso(curso){
-
-    //Crear un objeto con el contenido del curso seleccionado
+    //Crear un objeto con el contenido del curso actual
     const infoCurso = {
-        imagen:  curso.querySelector('img').src,
+        imagen: curso.querySelector('img').src,
         titulo: curso.querySelector('h4').textContent,
-        precio: curso.querySelector('.precio span').textContent, //utilzando la referencia del curso seleccionado
+        precio: curso.querySelector('.precio span').textContent,
         id: curso.querySelector('a').getAttribute('data-id'),
         cantidad: 1
     }
 
-    //revisa si un elemento ya existe en el carrito
-    const existe = articulosCarrito.some( curso => curso.id === infoCurso.id); 
-    if(existe){
+
+    //Revisa si un elemento ya existe en el carrito
+
+    //.some(curso iteramos sobre cada curso en articulos carrito
+    //.curso =>curso.id //Curso id toma el id de cada CURSO ITERADO
+    //curso.id ===infoCurso.id Lo compara con infoCurso.id (osea el nuevo que se agregara)
+    const existe = articulosCarrito.some(curso => curso.id === infoCurso.id);  //some nos permite recorrer un arreglo de objetos para verificar si un elemento ya existe en el
+    if(existe) {
         //Actualizamos la cantidad
-        const cursos = articulosCarrito.map(curso =>{
+        const cursos = articulosCarrito.map( curso => {
             if(curso.id === infoCurso.id){
                 curso.cantidad++;
-                console.log('se actualiza cantidad')
                 return curso; //retorna el objeto actualizado
             } else{
-                console.log('Se regresan las cantidades que no fueron modificadas')
-                return curso; //retorna el objeto sin modificaciones
-                
+                return curso; //retorna los objetos que no son los duplicados
             }
-        });
+        } );
 
         articulosCarrito = [...cursos];
-
-    }else{
-        //agregamos el curso al carrito
+    } else{
         //Agrega elementos al arreglo de carrito
-        console.log('Se agrega por primera vez al carrito')
-        articulosCarrito = [...articulosCarrito, infoCurso]; //se toma la referencia de articulosCarrito para no perder esa referencia
+        articulosCarrito = [...articulosCarrito, infoCurso]; /* ...articulosCarrito hace una copia del mismo array, para que al agregar un nuevo elemento, no se borren los anteriores */
     }
 
+    console.log(infoCurso);
+    console.log(articulosCarrito);
 
     carritoHTML();
 }
 
-//Muestra el carrito de compras en el HTML
-/* table
-tr = table row
-th = table heading
-td = table data (create a column) */
 
+//Muestra el Carrito de compras en el HTML
 function carritoHTML(){
 
-    //Limpiar el html previo
+    //Limpiar el HTML
     limpiarHTML();
-    //Recorre el carrito y genera el html
-
+    
+    
     articulosCarrito.forEach( curso =>{
-        //destructuring
-        const { imagen, titulo, precio, cantidad, id } = curso;
-        const row = document.createElement('tr');
+        //Esto proviene del objeto infoCurso
+        const {imagen, titulo, precio, cantidad, id} = curso; //Destructuring para utilizar las propiedades sin el "curso." ejemplo "curso.imagen"
+
+        //Recorre el carrito y genera el HTML
+        const row = document.createElement('tr'); //tr es un elemento de una tabla
+
         row.innerHTML = `
-        <td>
-            <img src = "${imagen}" width = "100"
+            <td>
+                <img src = "${imagen}" width = "100">
+            </td>
+            <td> ${titulo} </td>
+            <td> ${precio} </td>
+            <td> ${cantidad} </td>
 
-        <td>
-
-        <td>${titulo}</td>
-        <td> ${precio}</td>
-        <td> ${cantidad}</td>
-        <td>
-            <a href ="#" class = "borrar-curso" data-id = "${id}" > X </a> 
-        </td>`
-
-
+            <td>
+                <a href = "#" class = "borrar-curso" data-id = "${id}"> X </a> 
+            </td>
+        `;
 
         //Agrega el HTML del carrito en el tbody
-        contenedorCarrito.appendChild(row)
+        contenedorCarrito.appendChild(row);
     })
 }
-
 
 //Elimina los cursos del tbody
 
 function limpiarHTML(){
-    //FORMA LENTA
-    //contenedorCarrito.innerHTML = '';
+    /* forma lenta
+    contenedorCarrito.innerHTML = ''; */
 
-    //Elimina los hijos de contenedor carrito si es que hay
-    while(contenedorCarrito.firstChild){ //si el contenedor carrito tiene un hijo
-        contenedorCarrito.removeChild(contenedorCarrito.firstChild)
+    //un ciclo while consume menos recursos que el método innerHTML
+    while(contenedorCarrito.firstChild){
+        contenedorCarrito.removeChild(contenedorCarrito.firstChild);
     }
 }

@@ -74,17 +74,19 @@ document.addEventListener('DOMContentLoaded', () =>{
             //Validamos si el input tiene contenido
             if(e.target.value.trim() !== ''){
 
-                //Si en dado caso hay algo, agregamos validacion para el email
+                //Si en dado caso hay algo, validamos si el formato del email es valido
                 if(!validarEmail(e.target.value)){
-                    
-                
+                    //Si no lo es mostramos una alerta de que no es valido
                     mostrarAlerta('El Email no es valido', e.target.parentElement );
                     comprobarEmail();
-                    delete email[e.target.name];
+                    delete email[e.target.name]; //Eliminamos la propiedad email.cc si es que existe
                     return;
                 }
             } else{
+
+                //Si el input no tiene contenido, borramos el campo email.cc
                 delete email[e.target.name];
+                //Limpiamos la alerta
                 limpiarAlerta(e.target.parentElement);
                 return;
             
