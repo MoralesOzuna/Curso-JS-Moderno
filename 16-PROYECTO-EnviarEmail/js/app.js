@@ -77,6 +77,13 @@ document.addEventListener('DOMContentLoaded', () =>{
                 //Si en dado caso hay algo, validamos si el formato del email es valido
                 if(!validarEmail(e.target.value)){
                     //Si no lo es mostramos una alerta de que no es valido
+
+
+                     /* .parentElement te permite ir hacia el padre del elemento
+                        .nextElementSibling, te permite brincar al siguiente hermano del mismo tipo 
+                     
+                     */
+
                     mostrarAlerta('El Email no es valido', e.target.parentElement );
                     comprobarEmail();
                     delete email[e.target.name]; //Eliminamos la propiedad email.cc si es que existe
