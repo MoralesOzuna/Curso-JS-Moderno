@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //Seleccionar los elementos de la interaz
     const inputEmail = document.querySelector('#email');
+    const inputCc = document.querySelector('#cc');
     const inputAsunto = document.querySelector('#asunto');
     const inputMensaje = document.querySelector('#mensaje');
     const formulario = document.querySelector('#formulario');
@@ -18,10 +19,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const spinner = document.querySelector('#spinner');
 
     //Asignar eventos
-
+    inputCc.addEventListener('blur', validar);
     inputEmail.addEventListener('blur', validar);
     inputAsunto.addEventListener('blur', validar);
     inputMensaje.addEventListener('blur', validar);
+    
 
     formulario.addEventListener('submit', enviarEmail);
 
@@ -67,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     
     function validar(e){
-        if(e.target.value.trim() === ''){ //.trim() elimina los espacios vacios
+        if(e.target.value.trim() === '' && e.target.id !== 'cc'){ //.trim() elimina los espacios vacios
 
             /* .parentElement te permite ir hacia el padre del elemento
             .nextElementSibling, te permite brincar al siguiente hermano del mismo tipo 
@@ -77,34 +79,46 @@ document.addEventListener('DOMContentLoaded', function() {
             */
             mostrarAlerta(`El Campo ${e.target.id} es obligatorio`, e.target.parentElement);
             email[e.target.name] = ''; //Reiniciamos datos del objeto
+            console.log(email);
             comprobarEmail(); //desabhilitamos el boton
+            
             return; //Si se activa el if, el return corta la ejecucion del codigo
         } 
 
+        if(e.target.id === 'cc' && e.target.value.trim() !== '' && !validarEmail(e.target.value)){
+            mostrarAlerta('El Email adicional no es valido', e.target.parentElement);
+            email[e.target.name] = ''
+            console.log('Correo no valido');
+            console.log(email);
+            comprobarEmail();
+            return;
 
+            /* cc = '' 
+            pero existe*/
+        }
         if(e.target.id === 'email' && !validarEmail(e.target.value)){
             mostrarAlerta('El Email no es valido', e.target.parentElement);
             email[e.target.name] = ''; //Reiniciamos datos del objeto
+            console.log(email);
             comprobarEmail();
             return;
         }
-
         limpiarAlerta(e.target.parentElement);
-
+        
         //Asignamos valores al objeto
-
-
         //email[email, asunto, mensaje] = el valor escrito en email, asunto, mensaje, sin espacios y en minusculas
         //email[email, asunto, mensaje] nos va permitiendo acceder a las propiedades en el objeto de forma dinamica
-        email[e.target.name] = e.target.value.trim().toLowerCase();
 
+
+        email[e.target.name] = e.target.value.trim().toLowerCase();
+        
+        if(e.target.id === 'cc' && e.target.value.trim() === ''){
+            delete email.cc;
+            console.log('borrando...');
+        }
 
         //Comprobar el objeto de email 
-        comprobarEmail()
-
-
-        
-
+        comprobarEmail();
 
     }
 
@@ -153,12 +167,13 @@ document.addEventListener('DOMContentLoaded', function() {
         //console.log(Object.values(email)); Retorna los valores Object.keys(objeto) retorna las llaves
         //includes busca un string vacio
         //includes es una propiedad de los arrays
-
-        if(Object.values(email).includes('')){
+       
+        if(Object.values(email).includes('') ){
             btnSubmit.classList.add('opacity-50');
             btnSubmit.disabled = true;
             return
-        } 
+        }
+
 
         btnSubmit.classList.remove('opacity-50');
         btnSubmit.disabled = false;
@@ -174,7 +189,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
           formulario.reset();
-          comprobarEmail();
+          
+          const errores = document.querySelectorAll('.bg-red-600');
+
+          errores.forEach( error => {
+            error.remove();
+          })
+
     }
 
 
