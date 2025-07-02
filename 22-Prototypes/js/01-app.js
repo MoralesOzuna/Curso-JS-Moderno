@@ -9,7 +9,7 @@ const cliente = {
     saldo: 500
 }
 
-//Object constructor mas reutilizable
+//Object constructor mas reutilizable, nos permite crear múltiples objetos con la misma estructura y lógica sin tener que repetir código.
 
 function Cliente(nombre, saldo){
     this.nombre = nombre;
