@@ -21,14 +21,34 @@ class Presupuesto {
 
     nuevoGasto(gasto){
         this.gastos = [...this.gastos, gasto];
+        this.calcularRestante();
+    }
+
+    calcularRestante(){
+     
+        /* 
+        Reduce itera sobre los elementos y devuelve un gran total
+            Total es el parametro que acumula todo 
+            gasto es el objeto actual
+            => total se empieza a calcular con la suma de gasto.cantidad
+            la cual comienza en 0
+        */
+        const gastado = this.gastos.reduce( (total, gasto) => total + gasto.cantidad, 0 ); 
+        this.restante = this.presupuesto - gastado;
         
+    }
+
+    eliminarGasto(id){
+        this.gastos = this.gastos.filter( gasto => gasto.id !== id);
+        console.log(this.gastos);
+        this.calcularRestante();
     }
 }
 
 class UI{
 
     insertarPresupuesto(cantidad){
-        const {presupuesto, restante} = cantidad;
+        const {presupuesto, restante} = cantidad; //Destructuring para datos de cantidad
         document.querySelector('#total').textContent = presupuesto;
         document.querySelector('#restante').textContent = restante;
     };
@@ -55,7 +75,7 @@ class UI{
         },3000);
     }
 
-    agregarGastoListado(gastos){
+    mostrarGastos(gastos){
 
         limpiarHTML();
         //iterar sobre los gastos
@@ -70,18 +90,53 @@ class UI{
             nuevoGasto.dataset.id = id; /* Es lo mismo que nuevoGasto.setAttribute('data-id', id) pero en la nueva version se utiliza la otra forma */
 
             //Agregar el HTML del gasto
-            nuevoGasto.innerHTML =  `${nombre} <span class = "badge badge-primary badge-pill"> ${cantidad} </span>`;
+            nuevoGasto.innerHTML =  `${nombre} <span class = "badge badge-primary badge-pill"> $ ${cantidad} </span>`;
             //Boton para borrar gasto
 
             const btnBorrar = document.createElement('button');
             btnBorrar.classList.add('btn', 'btn-danger', 'borrar-gasto');
             btnBorrar.innerHTML = 'Borrar &times';
 
+            btnBorrar.onclick = () =>{
+                eliminarGasto(id);
+            }
+
             nuevoGasto.appendChild(btnBorrar);
 
             gastoListado.appendChild(nuevoGasto);
         })
 
+    }
+
+    actualizarRestante(restante){
+        document.querySelector('#restante').textContent = restante;
+    }
+
+    comprobarPresupuesto(presupuestoObj){
+        const {presupuesto, restante} = presupuestoObj;
+
+        const restanteDiv = document.querySelector('.restante');
+
+        //Comprobar 25%
+
+        if((presupuesto / 4) > restante){100100
+            restanteDiv.classList.remove('alert-success', 'alert-warning');
+            restanteDiv.classList.add('alert-danger');
+        } else if( (presupuesto / 2) > restante){
+            restanteDiv.classList.remove('alert-success');
+            restanteDiv.classList.add('alert-warning');
+        } else{
+            restanteDiv.classList.remove('alert-danger', 'alert-warning');
+            restanteDiv.classList.add('alert-success');
+        }
+
+
+        //Si el total es 0 O MENOR
+        
+        if(restante <= 0){
+            ui.imprimirAlerta('El presupuesto se ha agotado', 'error');
+            formulario.querySelector('button[type = "submit"]').disabled = true;
+        }
     }
 }   
 
@@ -104,8 +159,6 @@ function preguntarPresupuesto(){
 
     //presupuesto valido
     presupuesto = new Presupuesto(presupuestoUsuario);
-
-    console.log(presupuesto);
     ui.insertarPresupuesto(presupuesto);
 
 }
@@ -146,8 +199,11 @@ function agregarGasto(e){
 
 
     //Imprimir los gasto
-    const {gastos} = presupuesto; //Aplicamos destructuring para extraer los gastos
-    ui.agregarGastoListado(gastos);
+    const {gastos, restante} = presupuesto; //Aplicamos destructuring para extraer los gastos
+    ui.mostrarGastos(gastos);
+    ui.actualizarRestante(restante);
+
+    ui.comprobarPresupuesto(presupuesto);
 
     //Reinicia el formulario
     formulario.reset();
@@ -161,4 +217,17 @@ function limpiarHTML(){
         gastoListado.removeChild(gastoListado.firstChild)
 
     }
+}
+
+function eliminarGasto(id){
+
+    //Elimina gastos del objeto
+    presupuesto.eliminarGasto(id);
+
+    //Elimina los gastos
+    const {gastos, restante} = presupuesto
+    ui.mostrarGastos(gastos);
+    ui.actualizarRestante(restante);
+    ui.comprobarPresupuesto(presupuesto);
+
 }
