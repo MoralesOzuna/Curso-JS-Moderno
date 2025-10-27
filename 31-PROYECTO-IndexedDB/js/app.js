@@ -72,9 +72,6 @@ window.onload  = () =>{
     crearDB();
 }
 
-
- 
-
 // Eventos
 
 function eventListeners() {

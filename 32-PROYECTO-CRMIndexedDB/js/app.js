@@ -125,7 +125,7 @@ count → devuelve cuántos registros hay. */
             // Abrimos un cursor para recorrer todos los registros del store
             objectStore.openCursor().onsuccess = function(e){
 
-                // El cursor apunta al registro actual
+                
                 const cursor = e.target.result;
 
                 // Si el cursor existe, aún hay registros
