@@ -1,0 +1,14 @@
+/* Esta api nos permite saber cuando un elemento ya esta visible.
+Puede ser util para aplicar lazy loading o scroll infinito  */
+
+
+document.addEventListener('DOMContentLoaded', () =>{
+    const observer = new IntersectionObserver( entries => {
+        if(entries[0].isIntersecting){
+            console.log('Ya esta visible');
+        }
+    } );
+
+    observer.observe(document.querySelector('.premium'));
+});
+
