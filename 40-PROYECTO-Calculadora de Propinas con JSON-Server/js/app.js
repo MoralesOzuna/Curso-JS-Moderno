@@ -133,17 +133,141 @@ function mostrarPlatillos(platillos){
 }
 
 function agregarPlatillo(producto){ //producto es el ultimo platillo que agrego
-    //Extraer el pedido actual
-
+    
+    //Extramos la propiedad pedido actual que tenemos en cliente.
     let {pedido} = cliente;
 
-    //Revisar que la cantidad sea mayor a 0
-
+    //Revisar que la cantidad sea mayor a 0https://chatgpt.com/c/69392ba3-4a28-8332-98d5-904dc2d9fd93
     if(producto.cantidad > 0){
-        cliente.pedido = [...pedido, producto];
+        //revisar si un el elemento ya existe en el array
+        if(pedido.some(articulo => articulo.id === producto.id)){
+            const pedidoActualizado = pedido.map(articulo =>{  //recorremos todo el array para crear uno nuevo
+                if(articulo.id === producto.id){
+                    return { //un map siempre tiene que retornar lo que se modifica o hace distinto
+                        //Esto es para evitar la mutación del arreglo original 
+                        ...articulo, 
+                        cantidad: producto.cantidad //Actualizamos cantidad recuerda que esto es en pedido actualizado
+                    };
+                }
+
+                return articulo; //Se retorna lo que es igual
+            });
+            //Se asigna el nuevo array a cliente.pedido
+            cliente.pedido = [...pedidoActualizado];
+        }else{
+            //El articulo no existe, lo agregamos al array de pedido
+             cliente.pedido = [...pedido, producto]; //Actualizamos cliente.pedido con la referencía que sacamos del mismo objeto y el nuevo producto.
+        }
+       
     } else{
-        console.log('No es mayor a 0')
+        //Eliminar elementos cuando la cantidad es 0
+        const resultado = pedido.filter(articulo => articulo.id !== producto.id);
+        cliente.pedido = [...resultado]
     }
 
-    console.log(cliente.pedido)
+    //Limpiar el codigo HTML previo
+    limpiarHtml();
+
+    // Mostrar el resumen
+    actualizarResumen();
+}
+
+
+function actualizarResumen(){
+    const contenido = document.querySelector('#resumen .contenido');
+
+    const resumen = document.createElement('DIV');
+    resumen.classList.add('col-md-6', 'card', 'py-5', 'px-3', 'shadow');
+
+
+    //Información de la mesa
+    const mesa = document.createElement('P');
+    mesa.textContent = 'Mesa: ';
+    mesa.classList.add('fw-bold');
+
+    const mesaSpan = document.createElement('SPAN');
+    mesaSpan.textContent = cliente.mesa;
+    mesaSpan.classList.add('fw-normal');
+
+    //Información de la hora
+    const hora = document.createElement('P');
+    hora.textContent = 'Hora: ';
+    hora.classList.add('fw-bold');
+
+    const horaSpan = document.createElement('SPAN');
+    horaSpan.textContent = cliente.hora;
+    horaSpan.classList.add('fw-normal');
+
+    //Titulo de la seccion
+    const heading = document.createElement('H3');
+    heading.textContent = 'Platillos Consumidos';
+    heading.classList.add('my-4', 'text-center');
+
+    //Iterar sobre el array de pedidos
+    const grupo = document.createElement('UL');
+    grupo.classList.add('list-group');
+
+    const {pedido} = cliente;
+    pedido.forEach(articulo =>{
+        const {nombre, cantidad, precio, id} = articulo;
+
+        const lista = document.createElement('LI');
+        lista.classList.add('list-group-item');
+
+        const nombreEL = document.createElement('H4');
+        nombreEL.classList.add('my-4');
+        nombreEL.textContent = nombre;
+
+
+        //Cantidad del articulo
+        const cantidadEl = document.createElement('P');
+        cantidadEl.classList.add('fw-bold');
+        cantidadEl.textContent = 'Cantidad: ';
+
+        cantidadValor = document.createElement('SPAN');
+        cantidadValor.classList.add('fw-normal');
+        cantidadValor.textContent = cantidad;
+
+
+        //Cantidad del articulo
+        const precioEl = document.createElement('P');
+        precioEl.classList.add('fw-bold');
+        precioEl.textContent = 'Precio: ';
+
+        precioValor = document.createElement('SPAN');
+        precioValor.classList.add('fw-normal');
+        precioValor.textContent = `$${precio}`;
+
+        //Agregar Valores a sus contenedores
+        cantidadEl.appendChild(cantidadValor);
+        precioEl.appendChild(precioValor);
+
+
+        //AgregarElemento al Li
+        lista.appendChild(nombreEL);
+        lista.appendChild(cantidadEl);
+        lista.appendChild(precioEl);
+
+        //Agregar lista al grupo principal
+        grupo.appendChild(lista)
+    })
+
+
+    mesa.appendChild(mesaSpan);
+    hora.appendChild(horaSpan);
+
+    resumen.appendChild(mesa);
+    resumen.appendChild(hora);
+    resumen.appendChild(heading);
+    resumen.appendChild(grupo);
+
+    contenido.appendChild(resumen);
+}
+
+function limpiarHtml(){
+    const contenido = document.querySelector('#resumen .contenido');
+
+    while(contenido.firstChild){
+        contenido.removeChild(contenido.firstChild);
+    }
 }
