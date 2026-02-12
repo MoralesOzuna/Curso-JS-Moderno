@@ -27,7 +27,6 @@ function guardarCliente(){
     if(camposVacios){
 
         //Verificar si hay una alerta
-
         const existeAlerta = document.querySelector('.invalid-feedback');
 
         if(!existeAlerta){
@@ -48,7 +47,7 @@ function guardarCliente(){
     }; */
 
 
-    cliente = {...cliente, mesa, hora} //Se usa el spread operator() ...cliente para copiar el objeto completo y no perder pedido    
+    cliente = {...cliente, mesa, hora} //Se usa el spread operator() ...cliente para copiar el objeto completo y no perder el array pedido que no se esta modificando   
 
     const modalFormulario = document.querySelector('#formulario');
     const modalBootstrap = bootstrap.Modal.getInstance(modalFormulario);
@@ -66,6 +65,7 @@ function guardarCliente(){
 
 
 function mostrarSecciones(){
+    //Mostramos las secciones de platillos y resumen del pedido
     const seccionesOcultas = document.querySelectorAll('.d-none');
     seccionesOcultas.forEach(seccion => seccion.classList.remove('d-none'));
 }
@@ -75,7 +75,7 @@ function obtenerPlatillos(){
 
     fetch(url)
         .then(respuesta => respuesta.json())
-        .then(resultado => mostrarPlatillos(resultado))
+        .then(resultado => mostrarPlatillos(resultado)) //el resultado de respuesta.json se pasa ala funcion mostrar platillos
         .catch(error => console.log(error)) //por si falla se activa .catch
 }
 
@@ -137,7 +137,7 @@ function agregarPlatillo(producto){ //producto es el ultimo platillo que agrego
     //Extramos la propiedad pedido actual que tenemos en cliente.
     let {pedido} = cliente;
 
-    //Revisar que la cantidad sea mayor a 0https://chatgpt.com/c/69392ba3-4a28-8332-98d5-904dc2d9fd93
+    //Revisar que la cantidad sea mayor a 0
     if(producto.cantidad > 0){
         //revisar si un el elemento ya existe en el array
         if(pedido.some(articulo => articulo.id === producto.id)){
@@ -149,7 +149,7 @@ function agregarPlatillo(producto){ //producto es el ultimo platillo que agrego
                         cantidad: producto.cantidad //Actualizamos cantidad recuerda que esto es en pedido actualizado
                     };
                 }
-
+    
                 return articulo; //Se retorna lo que es igual
             });
             //Se asigna el nuevo array a cliente.pedido
@@ -240,7 +240,7 @@ function actualizarResumen(){
         precioEl.classList.add('fw-bold');
         precioEl.textContent = 'Precio: ';
 
-        precioValor = document.createElement('SPAN');
+        const precioValor = document.createElement('SPAN');
         precioValor.classList.add('fw-normal');
         precioValor.textContent = `$${precio}`;
 
@@ -323,7 +323,6 @@ function eliminarProducto(id){
      //Limpiar el codigo HTML previo
     limpiarHtml();
 
-      limpiarHtml();
 
     if(cliente.pedido.length){
         // Mostrar el resumen
